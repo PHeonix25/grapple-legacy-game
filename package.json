@@ -1,0 +1,23 @@
+{
+  "name": "grapple-legacy",
+  "version": "0.1.0",
+  "description": "A 2D grapple platformer",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "esbuild src/main.ts --bundle --platform=node --external:electron --outfile=dist/main.js && esbuild src/renderer/game.ts --bundle --outfile=dist/renderer/game.js --loader:.ts=ts",
+    "watch": "concurrently \"esbuild src/main.ts --bundle --platform=node --external:electron --outfile=dist/main.js --watch\" \"esbuild src/renderer/game.ts --bundle --outfile=dist/renderer/game.js --watch\"",
+    "start": "pnpm build && electron .",
+    "dev": "concurrently \"pnpm watch\" \"wait-on dist/main.js dist/renderer/game.js && electron .\""
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "concurrently": "^8.0.0",
+    "esbuild": "^0.21.0",
+    "electron": "^31.0.0",
+    "typescript": "^5.4.0",
+    "wait-on": "^7.0.0"
+  },
+  "dependencies": {
+    "phaser": "^3.80.0"
+  }
+}
