@@ -91,26 +91,33 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
-    const anchor = this.grapple.anchorPoint!;
+    const wrapPoints = this.grapple.wrapPoints;
     const segments = this.grapple.segmentPositions;
     const playerPos = this.player.position;
 
-    // Full chain: anchor → each segment → player
-    const points: Phaser.Math.Vector2[] = [anchor, ...segments, playerPos];
+    // Full visual path:
+    // wrap[0] → wrap[1] → ... → wrap[n] (straight taut lines above active anchor)
+    // then wrap[n] → seg[0] → seg[1] → ... → player (physics chain)
+    const allPoints: Phaser.Math.Vector2[] = [
+      ...wrapPoints,
+      ...segments,
+      playerPos,
+    ];
 
     this.ropeGraphics.lineStyle(2, 0xffdd57, 1);
-    for (let i = 0; i < points.length - 1; i++) {
+    for (let i = 0; i < allPoints.length - 1; i++) {
       this.ropeGraphics.lineBetween(
-        points[i].x, points[i].y,
-        points[i + 1].x, points[i + 1].y
+        allPoints[i].x, allPoints[i].y,
+        allPoints[i + 1].x, allPoints[i + 1].y
       );
     }
 
-    // Position and show the hook sprite at the anchor point.
-    // Rotate it to point away from the first rope segment so it looks embedded.
+    // Hook sprite at the original anchor (bottom of wrap stack)
+    const anchor = wrapPoints[0];
+    const next = wrapPoints.length > 1 ? wrapPoints[1] : (segments.length > 0 ? segments[0] : playerPos);
     const ropeDir = new Phaser.Math.Vector2(
-      segments.length > 0 ? segments[0].x - anchor.x : playerPos.x - anchor.x,
-      segments.length > 0 ? segments[0].y - anchor.y : playerPos.y - anchor.y
+      next.x - anchor.x,
+      next.y - anchor.y
     ).normalize();
 
     const hookAngle = Math.atan2(ropeDir.y, ropeDir.x) + Math.PI / 2 + Math.PI;
