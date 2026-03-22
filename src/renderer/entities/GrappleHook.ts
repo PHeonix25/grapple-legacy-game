@@ -80,6 +80,10 @@ export class GrappleHook {
     return this.wrapStack.length > 0;
   }
 
+  forceRelease(): void {
+    this.release();
+  }
+
   // ── Per-frame update ─────────────────────────────────────────────────────────
 
   update(): void {
