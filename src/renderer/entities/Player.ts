@@ -130,12 +130,19 @@ export class Player {
         this.scene.matter.body.applyForce(this.body, this.body.position, { x: nudge, y: 0 });
       }
     } else {
-      // Airborne, no rope — gentle air steering
+      // Airborne, no rope — gentle air steering with a velocity cap
       const airControl = 0.006;
+      const AIR_MAX_SPEED = WALK_SPEED * 1.2; // Can't exceed slightly above walk speed
       if (left) {
         this.scene.matter.body.applyForce(this.body, this.body.position, { x: -airControl, y: 0 });
+        if (this.body.velocity.x < -AIR_MAX_SPEED) {
+          this.scene.matter.body.setVelocity(this.body, { x: -AIR_MAX_SPEED, y: this.body.velocity.y });
+        }
       } else if (right) {
         this.scene.matter.body.applyForce(this.body, this.body.position, { x: airControl, y: 0 });
+        if (this.body.velocity.x > AIR_MAX_SPEED) {
+          this.scene.matter.body.setVelocity(this.body, { x: AIR_MAX_SPEED, y: this.body.velocity.y });
+        }
       }
     }
   }

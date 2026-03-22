@@ -11,6 +11,11 @@ const config: Phaser.Types.Core.GameConfig = {
     matter: {
       gravity: { x: 0, y: 2.5 },
       debug: false,
+      // More solver iterations = constraints resolved more accurately per frame.
+      // Default is 2 for both — raising these eliminates most chain stretch/bounce.
+      positionIterations: 10,
+      velocityIterations: 10,
+      constraintIterations: 10,
     },
   },
   scene: [GameScene],

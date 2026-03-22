@@ -128,7 +128,10 @@ pnpm watch
 ## Roadmap / TODO
 
 - Better wrapping around platforms
-- Dynamic level generation
+- Audio: grapple fire, swing whoosh, landing thud
+- Animations: idle, run, swing states on the player sprite
+- A goal: something to actually navigate toward
+- Levels: how are they generated, etc.
 - Color theming
 - Improved assets
 - Test harnesses

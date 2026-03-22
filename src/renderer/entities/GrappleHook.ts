@@ -2,10 +2,11 @@ import Phaser from 'phaser';
 import { Player } from './Player';
 
 // ── Tuning constants ─────────────────────────────────────────────────────────
-const GRAPPLE_MAX_DISTANCE = 400;
+const GRAPPLE_MAX_DISTANCE = 800;
 const SEGMENT_LENGTH = 20;
 const SEGMENT_RADIUS = 3;
 const SEGMENT_STIFFNESS = 1.0;
+const SEGMENT_DAMPING = 1.0;    // Critical damping — kills oscillation/stretch entirely
 const REEL_SENSITIVITY = 0.4;
 const MIN_FIRE_DISTANCE = 40;   // Ignore platforms closer than this when firing
 const WRAP_BUFFER = 15;         // How far from player to stop the wrap raycast
@@ -234,14 +235,14 @@ export class GrappleHook {
     this.anchorConstraint = matter.add.constraint(
       activeAnchorBody, this.segments[0],
       SEGMENT_LENGTH, SEGMENT_STIFFNESS,
-      { pointA: { x: 0, y: 0 }, pointB: { x: 0, y: 0 } }
+      { pointA: { x: 0, y: 0 }, pointB: { x: 0, y: 0 }, damping: SEGMENT_DAMPING }
     ) as MatterJS.ConstraintType;
 
     for (let i = 0; i < segmentCount - 1; i++) {
       this.links.push(matter.add.constraint(
         this.segments[i], this.segments[i + 1],
         SEGMENT_LENGTH, SEGMENT_STIFFNESS,
-        { pointA: { x: 0, y: 0 }, pointB: { x: 0, y: 0 } }
+        { pointA: { x: 0, y: 0 }, pointB: { x: 0, y: 0 }, damping: SEGMENT_DAMPING }
       ) as MatterJS.ConstraintType);
     }
 
@@ -249,7 +250,7 @@ export class GrappleHook {
       this.segments[segmentCount - 1],
       this.player.matterBody as MatterJS.BodyType,
       SEGMENT_LENGTH, SEGMENT_STIFFNESS,
-      { pointA: { x: 0, y: 0 }, pointB: { x: 0, y: 0 } }
+      { pointA: { x: 0, y: 0 }, pointB: { x: 0, y: 0 }, damping: SEGMENT_DAMPING }
     ) as MatterJS.ConstraintType;
   }
 
@@ -289,8 +290,19 @@ export class GrappleHook {
   private applyReel(): void {
     const desiredCount = Math.max(2, Math.round(this.targetRopeLength / SEGMENT_LENGTH));
     const currentCount = this.segments.length;
-    if (desiredCount < currentCount) this.removeSegmentFromPlayer();
-    else if (desiredCount > currentCount) this.addSegmentNearPlayer();
+
+    // Allow correcting multiple segments per frame — this prevents collision impulses
+    // from permanently extending the rope by drifting the segment count upward.
+    if (desiredCount < currentCount) {
+      // Remove all excess segments in one go
+      const toRemove = currentCount - desiredCount;
+      for (let i = 0; i < toRemove; i++) {
+        this.removeSegmentFromPlayer();
+      }
+    } else if (desiredCount > currentCount) {
+      // Add one segment per frame for smooth reeling out
+      this.addSegmentNearPlayer();
+    }
   }
 
   private removeSegmentFromPlayer(): void {
@@ -304,7 +316,7 @@ export class GrappleHook {
       this.segments[this.segments.length - 1],
       this.player.matterBody as MatterJS.BodyType,
       SEGMENT_LENGTH, SEGMENT_STIFFNESS,
-      { pointA: { x: 0, y: 0 }, pointB: { x: 0, y: 0 } }
+      { pointA: { x: 0, y: 0 }, pointB: { x: 0, y: 0 }, damping: SEGMENT_DAMPING }
     ) as MatterJS.ConstraintType;
   }
 
@@ -319,13 +331,13 @@ export class GrappleHook {
     ) as MatterJS.BodyType;
     this.links.push(matter.add.constraint(
       lastSeg, newSeg, SEGMENT_LENGTH, SEGMENT_STIFFNESS,
-      { pointA: { x: 0, y: 0 }, pointB: { x: 0, y: 0 } }
+      { pointA: { x: 0, y: 0 }, pointB: { x: 0, y: 0 }, damping: SEGMENT_DAMPING }
     ) as MatterJS.ConstraintType);
     this.segments.push(newSeg);
     this.playerConstraint = matter.add.constraint(
       newSeg, this.player.matterBody as MatterJS.BodyType,
       SEGMENT_LENGTH, SEGMENT_STIFFNESS,
-      { pointA: { x: 0, y: 0 }, pointB: { x: 0, y: 0 } }
+      { pointA: { x: 0, y: 0 }, pointB: { x: 0, y: 0 }, damping: SEGMENT_DAMPING }
     ) as MatterJS.ConstraintType;
   }
 
