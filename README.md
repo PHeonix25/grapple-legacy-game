@@ -33,14 +33,14 @@ Grapple Legacy is a desktop platformer prototype where movement is built around 
 It is currently set up as:
 - A single playable scene
 - Keyboard movement + jumping
-- Mouse-fired grappling hook
-- Scroll-wheel reeling
+- Mouse-fired grappling hook (hold to extend, release to drop)
+- W/S climbing up and down the rope
 - Rope wrap/unwrap behavior around geometry
 
 ## Features
 
 - Tight platform movement with coyote time and jump buffering
-- Grapple attach/release on click
+- Grapple fires on mouse hold, releases on mouse release
 - Physics rope chain with segment constraints
 - Rope wrap detection around platform corners
 - Rope unwrap when line-of-sight clears
@@ -53,8 +53,9 @@ It is currently set up as:
 |---|---|
 | Move | `A` / `D` or Left / Right Arrow |
 | Jump | `W`, Up Arrow, or `Space` |
-| Fire / Release Grapple | Left Click |
-| Reel Rope | Mouse Wheel |
+| Fire Grapple (hold) | Left Mouse Button |
+| Release Grapple | Release Left Mouse Button |
+| Climb Up / Down Rope | `W` / `S` |
 
 ## Tech Stack
 

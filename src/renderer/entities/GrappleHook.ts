@@ -38,28 +38,30 @@ export class GrappleHook {
   // Reeling
   private targetRopeLength: number = 0;
 
+  private keys: { w: Phaser.Input.Keyboard.Key; s: Phaser.Input.Keyboard.Key } | null = null;
+
   constructor(scene: Phaser.Scene, player: Player) {
     this.scene = scene;
     this.player = player;
 
     scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.leftButtonDown()) {
-        if (this.isAttached()) {
-          this.release();
-        } else {
-          this.fire(pointer);
-        }
+      if (pointer.leftButtonDown() && !this.isAttached()) {
+        this.fire(pointer);
       }
     });
 
-    scene.input.on('wheel', (
-      _pointer: Phaser.Input.Pointer,
-      _objects: unknown,
-      _dx: number,
-      dy: number
-    ) => {
-      this.reel(dy);
+    scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      if (!pointer.leftButtonDown() && this.isAttached()) {
+        this.release();
+      }
     });
+
+    if (scene.input.keyboard) {
+      this.keys = {
+        w: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+        s: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+      };
+    }
   }
 
   // ── Public API ───────────────────────────────────────────────────────────────
@@ -94,6 +96,11 @@ export class GrappleHook {
     this.player.setAnchorPoint(activeAnchor);
 
     if (!this.isAttached()) return;
+
+    if (this.keys) {
+      if (this.keys.w.isDown) this.reel(-20);
+      if (this.keys.s.isDown) this.reel(20);
+    }
 
     this.applyReel();
     this.checkWrap();

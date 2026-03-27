@@ -70,7 +70,7 @@ export class GameScene extends Phaser.Scene {
 
     // HUD
     this.add
-      .text(640, 20, 'WASD/Arrows: Move  |  Space: Jump  |  Click: Grapple  |  Scroll: Reel', {
+      .text(640, 20, 'AD/Arrows: Move  |  Space/W: Jump  |  Hold Click: Grapple  |  W/S: Climb', {
         fontSize: '14px',
         color: '#aaaaaa',
       })
