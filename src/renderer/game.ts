@@ -3,6 +3,7 @@ import { BootScene } from './scenes/BootScene';
 import { MainMenuScene } from './scenes/MainMenuScene';
 import { LevelSelectScene } from './scenes/LevelSelectScene';
 import { SettingsScene } from './scenes/SettingsScene';
+import { PauseMenuScene } from './scenes/PauseMenuScene';
 import { GameScene } from './scenes/GameScene';
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -20,7 +21,7 @@ const config: Phaser.Types.Core.GameConfig = {
       constraintIterations: 10,
     },
   },
-  scene: [BootScene, MainMenuScene, LevelSelectScene, SettingsScene, GameScene],
+  scene: [BootScene, MainMenuScene, LevelSelectScene, SettingsScene, PauseMenuScene, GameScene],
 };
 
 new Phaser.Game(config);

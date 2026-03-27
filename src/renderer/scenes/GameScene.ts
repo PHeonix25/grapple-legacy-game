@@ -71,21 +71,21 @@ export class GameScene extends Phaser.Scene {
 
     // HUD
     this.add
-      .text(640, 20, 'AD/Arrows: Move  |  Space/W: Jump  |  Hold Click: Grapple  |  W/S: Climb  |  ESC: Menu', {
+      .text(640, 20, 'AD/Arrows: Move  |  Space/W: Jump  |  Hold Click: Grapple  |  W/S: Climb  |  ESC: Pause', {
         fontSize: '14px',
         color: '#aaaaaa',
       })
       .setOrigin(0.5, 0)
       .setScrollFactor(0);
 
-    // Escape returns to main menu
+    // Escape opens pause menu
     this.escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
   }
 
   update(_time: number, delta: number): void {
     if (Phaser.Input.Keyboard.JustDown(this.escKey)) {
-      this.grapple.forceRelease();
-      this.scene.start('MainMenuScene');
+      this.scene.pause();
+      this.scene.launch('PauseMenuScene');
       return;
     }
 
